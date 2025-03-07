@@ -9,7 +9,7 @@
 [![lab](https://img.shields.io/badge/Peng%20Cheng-Lab-grey?labelColor=lightgrey)](https://www.pcl.ac.cn)
 <!-- <img src="https://github.com/user-attachments/assets/12d7749c-071a-427c-81bf-b87b91def670" alt="Watermark" style="width: 40px; height: auto"> -->
 
-**F5-TTS**: Diffusion Transformer with ConvNeXt V2, faster trained and inference.
+**F5-TTS**: Diffusion Transformer with ConvNeXt V2, faster trained and inference. F5-TTS [paper](https://arxiv.org/abs/2410.06885).
 
 **E2 TTS**: Flat-UNet Transformer, closest reproduction from [paper](https://arxiv.org/abs/2406.18009).
 
