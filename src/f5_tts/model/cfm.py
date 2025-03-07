@@ -14,9 +14,12 @@ from typing import Callable
 
 import torch
 import torch.nn.functional as F
+import torch.nn.init as init
 from torch import nn
 from torch.nn.utils.rnn import pad_sequence
 from torchdiffeq import odeint
+from f5_tts.model.modules import AdaLayerNormZero, AdaLayerNormZero_Final
+
 
 from f5_tts.model.modules import MelSpec
 from f5_tts.model.utils import (
@@ -73,6 +76,13 @@ class CFM(nn.Module):
 
         # vocab map for tokenization
         self.vocab_char_map = vocab_char_map
+        if self.training:
+            # possible fix to ensure Zero Initialization When Using AdaLayerNormZero                
+            for module in self.transformer.modules():
+                if isinstance(module, AdaLayerNormZero) or isinstance(module, AdaLayerNormZero_Final):
+                    init.zeros_(module.linear.weight)
+                    init.zeros_(module.linear.bias)
+        
 
     @property
     def device(self):
