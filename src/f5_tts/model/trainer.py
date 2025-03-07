@@ -13,11 +13,14 @@ from ema_pytorch import EMA
 from torch.optim import AdamW
 from torch.optim.lr_scheduler import LinearLR, SequentialLR
 from torch.utils.data import DataLoader, Dataset, SequentialSampler
+import torch.nn.init as init
+
 from tqdm import tqdm
 
 from f5_tts.model import CFM
 from f5_tts.model.dataset import DynamicBatchSampler, collate_fn
 from f5_tts.model.utils import default, exists
+from f5_tts.model.modules import AdaLayerNormZero, AdaLayerNormZero_Final
 
 # trainer
 
@@ -134,6 +137,14 @@ class Trainer:
             self.optimizer = bnb.optim.AdamW8bit(model.parameters(), lr=learning_rate)
         else:
             self.optimizer = AdamW(model.parameters(), lr=learning_rate)
+
+        if self.model.training:  # Only apply zero-init during training
+            # fix to ensure that zero-initialization occurs when the model is created
+            for module in model.modules():
+                if isinstance(module, AdaLayerNormZero) or isinstance(module, AdaLayerNormZero_Final):
+                    init.zeros_(module.linear.weight)
+                    init.zeros_(module.linear.bias)
+            
         self.model, self.optimizer = self.accelerator.prepare(self.model, self.optimizer)
 
     @property
