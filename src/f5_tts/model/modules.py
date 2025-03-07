@@ -13,6 +13,7 @@ import math
 from typing import Optional
 
 import torch
+import torch.nn.init as init
 import torch.nn.functional as F
 import torchaudio
 from librosa.filters import mel as librosa_mel_fn
@@ -282,6 +283,10 @@ class AdaLayerNormZero(nn.Module):
 
         self.norm = nn.LayerNorm(dim, elementwise_affine=False, eps=1e-6)
 
+        # Ensure zero-initialization of the weight parameters
+        init.zeros_(self.linear.weight)
+        init.zeros_(self.linear.bias)
+
     def forward(self, x, emb=None):
         emb = self.linear(self.silu(emb))
         shift_msa, scale_msa, gate_msa, shift_mlp, scale_mlp, gate_mlp = torch.chunk(emb, 6, dim=1)
@@ -302,6 +307,10 @@ class AdaLayerNormZero_Final(nn.Module):
         self.linear = nn.Linear(dim, dim * 2)
 
         self.norm = nn.LayerNorm(dim, elementwise_affine=False, eps=1e-6)
+
+        # Ensure zero-initialization of the weight parameters
+        init.zeros_(self.linear.weight)
+        init.zeros_(self.linear.bias)
 
     def forward(self, x, emb):
         emb = self.linear(self.silu(emb))
